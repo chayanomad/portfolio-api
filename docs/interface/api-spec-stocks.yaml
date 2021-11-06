@@ -1,0 +1,393 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: ICW stocks API
+  description: APIs used in ICW stocks information
+  termsOfService: 'urn:tos'
+servers:
+  - url: 'localhost:{port}/{basePath}'
+    description: development server
+    variables:
+      basePath:
+        default: api
+      port:
+        enum:
+          - '8091'
+          - '8092'
+          - '443'
+          - '8443'
+        default: '8091'
+tags:
+  - name: healthcheck
+    description: ヘルスチェックAPI
+  - name: stocks
+    description: 在庫管理API
+paths:
+  /healthcheck/app/status:
+    get:
+      tags:
+        - healthcheck
+      summary: 稼働確認(APP)
+      description: APIサーバーが正常に動いていることを確認する
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+  /healthcheck/db/status:
+    get:
+      tags:
+        - healthcheck
+      summary: 稼働確認(DB)
+      description: DB接続が正常に行われることを確認する
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheck'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+  /stocks:
+    get:
+      tags:
+        - stocks
+      summary: 在庫情報取得(未実装)
+      description: |-
+        在庫情報を取得するAPI
+      parameters:
+        - in: header
+          name: Accept
+          description: レスポンスのコンテンツタイプ
+          required: true
+          schema:
+            type: string
+            example: 'application/json'
+        - in: query
+          name: id
+          description: 商品ID。複数指定可能
+          schema:
+            type: string
+            example: AA000001
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetStocks'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+  /stocks/{id}:
+    get:
+      tags:
+        - stocks
+      summary: 在庫情報取得
+      description: |-
+        指定された商品の在庫情報を取得するAPI
+      parameters:
+        - in: header
+          name: Accept
+          description: レスポンスのコンテンツタイプ
+          required: true
+          schema:
+            type: string
+            example: 'application/json'
+        - in: path
+          name: id
+          description: 商品ID
+          required: true
+          schema:
+            type: string
+            example: 'AA000001'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetStock'
+        '400':
+          description: 入力値フォーマット不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E400-001:
+                  $ref: '#/components/examples/BadRequestError-E400-001'
+                E400-002:
+                  $ref: '#/components/examples/BadRequestError-E400-002'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+  /stocks/{id}/buy:
+    put:
+      tags:
+        - stocks
+      summary: 在庫情報更新
+      description: |-
+        指定された商品の在庫情報を更新するAPI
+      parameters:
+        - in: header
+          name: Accept
+          description: レスポンスのコンテンツタイプ
+          required: true
+          schema:
+            type: string
+            example: 'application/json'
+        - in: path
+          name: id
+          description: 商品ID
+          required: true
+          schema:
+            type: string
+            example: 'AA000001'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+              properties:
+                amount:
+                  type: integer
+                  description: 購入個数
+                  example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutStock'
+        '400':
+          description: 入力値フォーマット不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E400-001:
+                  $ref: '#/components/examples/BadRequestError-E400-001'
+                E400-002:
+                  $ref: '#/components/examples/BadRequestError-E400-002'
+                E400-003:
+                  $ref: '#/components/examples/BadRequestError-E400-003'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+  /stocks/manage:
+    put:
+      tags:
+        - stocks
+      summary: 在庫情報更新(未実装)
+      description: |-
+        商品の在庫情報を更新するAPI
+      parameters:
+        - in: header
+          name: Accept
+          description: レスポンスのコンテンツタイプ
+          required: true
+          schema:
+            type: string
+            example: 'application/json'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - items
+              properties:
+                items:
+                  type: array
+                  description: 商品リスト
+                  items:
+                    $ref: '#/components/schemas/Stock'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutStocks'
+        '400':
+          description: 入力値フォーマット不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E400-001:
+                  $ref: '#/components/examples/BadRequestError-E400-001'
+                E400-002:
+                  $ref: '#/components/examples/BadRequestError-E400-002'
+                E400-003:
+                  $ref: '#/components/examples/BadRequestError-E400-003'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+components:
+  schemas:
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          description: 動作確認結果
+          example: "OK"
+    GetStocks:
+      type: object
+      description: 在庫リスト取得時のレスポンスオブジェクト
+      required:
+        - stocks
+        - matched
+      properties:
+        stocks:
+          type: array
+          description: 在庫のリスト
+          items:
+            $ref: '#/components/schemas/Stock'
+    GetStock:
+      type: object
+      description: 在庫取得時のレスポンスオブジェクト
+      required:
+        - stock
+      properties:
+        stock:
+          $ref: '#/components/schemas/Stock'
+    PutStock:
+      type: object
+      description: 在庫更新時のレスポンスオブジェクト
+      required:
+        - stock
+      properties:
+        stock:
+          $ref: '#/components/schemas/Stock'
+    PutStocks:
+      type: object
+      description: 在庫一括更新時のレスポンスオブジェクト
+      required:
+        - stocks
+      properties:
+        stocks:
+          type: array
+          description: 在庫のリスト
+          items:
+            $ref: '#/components/schemas/Stock'
+    Stock:
+      type: object
+      description: 商品在庫情報
+      required:
+        - id
+        - amount
+      properties:
+        id:
+          type: string
+          description: 商品ID
+          example: 'AA000001'
+        amoutn:
+          type: integer
+          description: 在庫数
+          example: 1
+    APIError:
+      type: object
+      required:
+        - code
+        - message
+        - errors
+      properties:
+        code:
+          description: エラーコード
+          type: string
+        message:
+          description: エラー概要の説明
+          type: string
+        errors:
+          description: 入力値不正の場合、この項目に値が入る
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                description: 不正と判断された項目
+                type: string
+              code:
+                description: 不正と判断された理由コード
+                type: string
+              message:
+                description: 不正と判断された理由の説明
+                type: string
+  examples:
+    BadRequestError-E400-001:
+      value:
+        code: "E400-001"
+        message: "入力値が不正です。"
+        errors: 
+          - field: "password"
+            code: "NOT_EMPTY"
+            message: "この項目には有効な値が必要です。nullや空文字は許容されません。"
+    BadRequestError-E400-002:
+      value:
+        code: "E400-002"
+        message: "指定された商品[%s]が存在しません。"
+        errors: []
+    BadRequestError-E400-003:
+      value:
+        code: "E400-003"
+        message: "指定された個数の在庫がありません。"
+        errors: []
+    InternalServerError:
+      value:
+        code: "E500-001"
+        message: "予期しないエラーが発生しました。"
+        errors: []

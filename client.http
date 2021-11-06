@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------------
+# GET /healthcheck/app/status
+#  稼働確認(APP)
+# ---------------------------------------------------------------------
+### 正常ケース
+GET http://localhost:8091/api/healthcheck/app/status
+Content-Type: application/json
+Accept: application/json
+
+
+# ---------------------------------------------------------------------
+# GET /healthcheck/db/status
+#  稼働確認(DB)
+# ---------------------------------------------------------------------
+### 正常ケース
+GET http://localhost:8091/api/healthcheck/db/status
+Content-Type: application/json
+Accept: application/json
+
+# ---------------------------------------------------------------------
+# GET /stocks/{id}
+#  指定された商品の在庫情報を取得
+# ---------------------------------------------------------------------
+### 正常ケース
+GET http://localhost:8091/api/stocks/AA000001
+Content-Type: application/json
+Accept: application/json
+
+### 異常ケース
+GET http://localhost:8091/api/stocks/DUMMY
+Content-Type: application/json
+Accept: application/json
+
+# ---------------------------------------------------------------------
+# PUT /stocks/{id}/buy
+#  指定された商品の在庫情報を更新するAPI
+# ---------------------------------------------------------------------
+### 正常ケース
+PUT http://localhost:8091/api/stocks/AA000001/buy
+Content-Type: application/json
+Accept: application/json
+
+{
+  "amount": 1
+}
+
+### 異常ケース
+PUT http://localhost:8091/api/stocks/AA000001/buy
+Content-Type: application/json
+Accept: application/json
+
+{
+  "amount": 101
+}

@@ -1,0 +1,1 @@
+INSERT INTO Stocks(id, amount) VALUES ('AA000001', 100);
