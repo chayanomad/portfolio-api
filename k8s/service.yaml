@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: api-service
+spec:
+  type: NodePort 
+  selector:
+    app: api
+  ports:
+    - name: external-access
+      protocol: TCP
+      port: 8091 
+      targetPort: 8091
