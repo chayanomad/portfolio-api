@@ -2,50 +2,32 @@ package com.ibm.jp.ibmconsulting.icw.api.ui.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.lang.Nullable;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.WebUtils;
 
 @Slf4j
 public class LoggingHttpServletRequestWrapper extends HttpServletRequestWrapper
     implements LoggingHttpServletWrapper {
-  private final byte[] content;
-  private final HttpServletRequest delegate;
+  @Nullable private final ContentCachingRequestWrapper wrapper;
   private final String path;
   private final String method;
 
   public LoggingHttpServletRequestWrapper(String path, String method, HttpServletRequest request)
       throws IOException {
     super(request);
-    this.delegate = request;
+    this.wrapper =
+        WebUtils.getNativeRequest(request, ContentCachingRequestWrapper.class);
     this.path = path;
     this.method = method;
-    content = IOUtils.toByteArray(delegate.getInputStream());
-  }
-
-  @Override
-  public ServletInputStream getInputStream() throws IOException {
-    if (ArrayUtils.isEmpty(content)) {
-      return delegate.getInputStream();
-    }
-    return new LoggingServletInputStream(content);
-  }
-
-  public String getContent() {
-    return new String(content, Charset.forName("UTF-8"));
   }
 
   @Override
@@ -69,8 +51,8 @@ public class LoggingHttpServletRequestWrapper extends HttpServletRequestWrapper
     final Enumeration<String> params = this.getParameterNames();
     while (params.hasMoreElements()) {
       final String name = (String) params.nextElement();
-      final String value = this.getParameter(name);
-      paramMap.put(name, value);
+      final String[] values = this.getParameterValues(name);
+      paramMap.put(name, String.join(",", values));
     }
     map.put("params", paramMap);
 
@@ -81,61 +63,29 @@ public class LoggingHttpServletRequestWrapper extends HttpServletRequestWrapper
     // Body
     if (MediaType.APPLICATION_JSON.equals(this.getContentType())) {
       try {
-        final String body = this.getContent();
-        if (StringUtils.isNotBlank(body)) {
-          try {
-            @SuppressWarnings("unchecked")
-            final Map<String, Object> bodyMap =
-                new ObjectMapper().readValue(this.getContent(), Map.class);
-            map.put("body", bodyMap);
-          } catch (final MismatchedInputException mie) {
-            log.warn("bodyをmap形式に変換できません。", mie);
-            map.put("body", body);
+        if (wrapper != null) {
+          byte[] buf = wrapper.getContentAsByteArray();
+          if (buf.length > 0) {
+            try {
+              @SuppressWarnings("unchecked")
+              final Map<String, Object> bodyMap =
+                  new ObjectMapper().readValue(buf, Map.class);
+              map.put("body", bodyMap);
+            }
+            catch (final MismatchedInputException ex) {
+              log.warn("bodyをmap形式に変換できません。", ex);
+              map.put("body", buf);
+            }
+          } else {
+            map.put("body", buf);
           }
         } else {
-          map.put("body", body);
+          map.put("body", "");
         }
-
       } catch (final IOException e) {
         log.warn("bodyの読み込みに失敗しました。", e);
       }
     }
     return new LoggingContent(path, method, RequestResponse.REQUEST, map);
-  }
-
-  private static class LoggingServletInputStream extends ServletInputStream {
-
-    private final InputStream is;
-
-    private LoggingServletInputStream(byte[] content) {
-      super();
-      this.is = new ByteArrayInputStream(content);
-    }
-
-    @Override
-    public boolean isFinished() {
-      return true;
-    }
-
-    @Override
-    public boolean isReady() {
-      return true;
-    }
-
-    @Override
-    public void setReadListener(ReadListener readListener) {
-      // not used
-    }
-
-    @Override
-    public int read() throws IOException {
-      return this.is.read();
-    }
-
-    @Override
-    public void close() throws IOException {
-      super.close();
-      is.close();
-    }
   }
 }

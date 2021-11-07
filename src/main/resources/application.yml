@@ -11,16 +11,11 @@ spring:
   h2:
     console:
       enabled: true
+      settings:
+        web-allow-others: true
   jpa:
     hibernate:
       ddl-auto: none
     database-platform: org.hibernate.dialect.H2Dialect
   jmx:
     default-domain: api
-logging:
-  level: 
-    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
-  file:
-    name: build/tmp/api.log
-    max-size: 1000000
-    max-history: 1

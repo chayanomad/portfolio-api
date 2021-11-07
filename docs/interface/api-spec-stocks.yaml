@@ -72,9 +72,9 @@ paths:
     get:
       tags:
         - stocks
-      summary: 在庫情報取得(未実装)
+      summary: 在庫情報クエリ検索
       description: |-
-        在庫情報を取得するAPI
+        在庫情報をクエリで取得するAPI
       parameters:
         - in: header
           name: Accept
@@ -89,6 +89,20 @@ paths:
           schema:
             type: string
             example: AA000001
+        - in: query
+          name: offset
+          description: 開始番号。デフォルト0
+          schema:
+            type: integer
+            minimum: 0
+            example: 5
+        - in: query
+          name: limit
+          description: デフォルト指定なし。
+          schema:
+            type: integer
+            minimum: 1
+            example: 25
       responses:
         '200':
           description: OK
@@ -96,6 +110,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetStocks'
+        '400':
+          description: 入力値フォーマット不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E400-001:
+                  $ref: '#/components/examples/BadRequestError-E400-001'
         default:
           description: 予期しないエラー
           content:
@@ -222,9 +245,9 @@ paths:
     put:
       tags:
         - stocks
-      summary: 在庫情報更新(未実装)
+      summary: 在庫情報一括更新
       description: |-
-        商品の在庫情報を更新するAPI
+        商品の在庫情報を一括更新するAPI
       parameters:
         - in: header
           name: Accept

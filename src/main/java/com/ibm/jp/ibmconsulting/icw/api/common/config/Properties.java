@@ -10,7 +10,7 @@ import java.util.Objects;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.convert.LegacyListDelimiterHandler;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConfigurationRuntimeException;
 
@@ -29,7 +29,7 @@ public enum Properties {
                       .properties()
                       .setEncoding(encoding)
                       .setFile(new File(filename))
-                      .setListDelimiterHandler(new LegacyListDelimiterHandler(',')))
+                      .setListDelimiterHandler(new DefaultListDelimiterHandler(',')))
               .getConfiguration();
       this.columns = columns;
 

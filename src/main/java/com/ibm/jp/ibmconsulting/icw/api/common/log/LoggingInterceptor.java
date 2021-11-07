@@ -1,6 +1,5 @@
 package com.ibm.jp.ibmconsulting.icw.api.common.log;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import javax.annotation.Priority;
@@ -8,8 +7,6 @@ import javax.enterprise.context.Dependent;
 import javax.interceptor.Interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.ibm.jp.ibmconsulting.icw.api.ui.filter.LoggingHttpServletRequestWrapper;
-import com.ibm.jp.ibmconsulting.icw.api.ui.filter.LoggingHttpServletResponseWrapper;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +26,6 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
       HttpServletResponse response, 
       Object handler) {
     startTimeEpochMilli = getCurrentEpochMilli();
-
-    // final String path = request.getServletPath();
-    // final String method = request.getMethod();
-    // try {
-    //   final LoggingHttpServletRequestWrapper req =
-    //       new LoggingHttpServletRequestWrapper(path, method, request);
-    //   log.info(req.getLoggingContent().toString());
-    // } catch (final IOException e) {
-    //   log.warn("入力の読み込みに失敗しました。", e);
-    // }
     
     return true;
   }
@@ -55,12 +42,6 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
     
     endTimeEpochMilli = getCurrentEpochMilli();
     log.info("{}:{} ms", classAndMethod, endTimeEpochMilli - startTimeEpochMilli);
-
-    // final String path = request.getServletPath();
-    // final String method = request.getMethod();
-    // final LoggingHttpServletResponseWrapper res =
-    //     new LoggingHttpServletResponseWrapper(path, method, response);
-    // log.info(res.getLoggingContent().toString());
   }
 
   private static long getCurrentEpochMilli() {

@@ -18,6 +18,20 @@ Content-Type: application/json
 Accept: application/json
 
 # ---------------------------------------------------------------------
+# GET /stocks
+#  在庫情報検索
+# ---------------------------------------------------------------------
+### 正常ケース
+GET http://localhost:8091/api/stocks
+Content-Type: application/json
+Accept: application/json
+
+### 異常ケース
+GET http://localhost:8091/api/stocks?id=AA000001&id=DUMMY&id=AA000003&id=AA000004&offset=1&limit=1
+Content-Type: application/json
+Accept: application/json
+
+# ---------------------------------------------------------------------
 # GET /stocks/{id}
 #  指定された商品の在庫情報を取得
 # ---------------------------------------------------------------------
@@ -51,4 +65,52 @@ Accept: application/json
 
 {
   "amount": 101
+}
+
+# ---------------------------------------------------------------------
+# PUT /stocks/manage
+#  指定された商品の在庫情報を管理するAPI
+# ---------------------------------------------------------------------
+### 正常ケース
+PUT http://localhost:8091/api/stocks/manage
+Content-Type: application/json
+Accept: application/json
+
+{
+  "stocks": [
+    {
+      "id": "AA000001",
+      "amount": "100"
+    },
+    {
+      "id": "AA000002",
+      "amount": "100"
+    },
+    {
+      "id": "AA000003",
+      "amount": "100"
+    }
+  ]
+}
+
+### 異常ケース
+PUT http://localhost:8091/api/stocks/manage
+Content-Type: application/json
+Accept: application/json
+
+{
+  "stocks": [
+    {
+      "id": "AA000001",
+      "amount": "100"
+    },
+    {
+      "id": "DUMMY",
+      "amount": "100"
+    },
+    {
+      "id": "AA000003",
+      "amount": "100"
+    }
+  ]
 }
