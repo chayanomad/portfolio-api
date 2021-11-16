@@ -358,7 +358,7 @@ components:
           type: string
           description: 商品ID
           example: 'AA000001'
-        amoutn:
+        amount:
           type: integer
           description: 在庫数
           example: 1
