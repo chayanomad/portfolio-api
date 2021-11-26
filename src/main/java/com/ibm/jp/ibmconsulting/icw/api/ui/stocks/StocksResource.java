@@ -1,7 +1,6 @@
 package com.ibm.jp.ibmconsulting.icw.api.ui.stocks;
 
 import java.util.List;
-
 import javax.inject.Inject;
 import com.ibm.jp.ibmconsulting.icw.api.application.StocksService;
 import com.ibm.jp.ibmconsulting.icw.api.common.log.Logging;
