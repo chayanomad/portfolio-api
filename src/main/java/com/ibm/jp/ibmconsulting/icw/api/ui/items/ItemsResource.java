@@ -1,6 +1,9 @@
 package com.ibm.jp.ibmconsulting.icw.api.ui.items;
 
 import java.util.List;
+
+import javax.inject.Inject;
+
 import com.ibm.jp.ibmconsulting.icw.api.application.ItemsService;
 import com.ibm.jp.ibmconsulting.icw.api.common.log.Logging;
 import com.ibm.jp.ibmconsulting.icw.api.domain.Item;
@@ -19,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("items")
 @RequiredArgsConstructor
 public class ItemsResource {
-  final private ItemsService service;
+  @Inject private final ItemsService service;
 
   /** 商品検索API */
   @GetMapping(
