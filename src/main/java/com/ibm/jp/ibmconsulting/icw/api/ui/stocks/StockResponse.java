@@ -12,7 +12,7 @@ public class StockResponse {
   @NotNull private final int amount;
 
   public StockResponse(Stock stock) {
-    this.id = stock.getId();
+    this.id = stock.getItemId();
     this.amount = stock.getAttributes().getAmount();
     ValidateHelper.validate(this);
   }

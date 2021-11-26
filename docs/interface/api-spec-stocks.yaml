@@ -20,6 +20,8 @@ servers:
 tags:
   - name: healthcheck
     description: ヘルスチェックAPI
+  - name: items
+    description: 商品関連API
   - name: stocks
     description: 在庫管理API
 paths:
@@ -59,6 +61,167 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthCheck'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+  /items:
+    get:
+      tags:
+        - items
+      summary: 商品取得クエリ検索
+      description: |-
+        商品情報をクエリで取得するAPI
+      parameters:
+        - in: header
+          name: Accept
+          description: レスポンスのコンテンツタイプ
+          required: true
+          schema:
+            type: string
+            example: 'application/json'
+        - in: query
+          name: name
+          description: 商品名
+          schema:
+            type: string
+            example: りんご
+        - in: query
+          name: category
+          description: カテゴリー。複数選択可能
+          schema:
+            type: string
+            enum:
+              - FRUIT
+              - VEGETABLE
+              - JUICE
+            example: FRUIT
+        - in: query
+          name: minprice
+          description: 金額下限
+          schema:
+            type: integer
+            minimum: 0
+            example: 100
+        - in: query
+          name: maxprice
+          description: 金額上限
+          schema:
+            type: integer
+            minimum: 0
+            example: 1000
+        - in: query
+          name: sort
+          description: |-
+            ソートキー。デフォルトはID。
+
+            - id: ID
+            - name: 名前
+            - price: 金額
+            - stock: 在庫数
+          schema:
+            type: string
+            enum:
+              - id
+              - name
+              - price
+              - stock
+            example: name
+        - in: query
+          name: order
+          description: |-
+            並び替え順序。デフォルトは昇順。
+
+            - asc: 昇順
+            - desc: 降順
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            example: desc
+        - in: query
+          name: offset
+          description: 開始番号。デフォルト0
+          schema:
+            type: integer
+            minimum: 0
+            example: 5
+        - in: query
+          name: limit
+          description: デフォルト指定なし。
+          schema:
+            type: integer
+            minimum: 1
+            example: 25
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetItems'
+        '400':
+          description: 入力値フォーマット不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E400-001:
+                  $ref: '#/components/examples/BadRequestError-E400-001'
+        default:
+          description: 予期しないエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E500-001:
+                  $ref: '#/components/examples/InternalServerError'
+  /items/{id}:
+    get:
+      tags:
+        - items
+      summary: 商品情報取得
+      description: |-
+        商品情報を取得するAPI
+      parameters:
+        - in: header
+          name: Accept
+          description: レスポンスのコンテンツタイプ
+          required: true
+          schema:
+            type: string
+            example: 'application/json'
+        - in: path
+          name: id
+          description: 商品ID
+          required: true
+          schema:
+            type: string
+            example: AA000001
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: 入力値フォーマット不正
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              examples:
+                E400-001:
+                  $ref: '#/components/examples/BadRequestError-E400-001'
         default:
           description: 予期しないエラー
           content:
@@ -308,6 +471,71 @@ components:
           type: string
           description: 動作確認結果
           example: "OK"
+    GetItems:
+      type: object
+      description: 商品リスト取得時のレスポンスオブジェクト
+      required:
+        - items
+        - matched
+      properties:
+        items:
+          type: array
+          description: 商品のリスト
+          items:
+            $ref: '#/components/schemas/Item'
+        matched:
+          type: integer
+          description: 該当件数 
+          example: 1
+    Item:
+      type: object
+      description: 商品
+      required:
+        - id
+        - category
+        - name
+        - kana
+        - price
+        - comment
+        - image_url
+        - stock
+      properties:
+        id:
+          type: string
+          description: 商品ID
+          example: AA000001
+        category:
+          type: string
+          description: カテゴリー
+          enum:
+            - FRUIT
+            - VEGETABLE
+            - JUICE
+          example: FRUIT
+        name:
+          type: string
+          description: 商品名
+          example: りんご
+        kana:
+          type: string
+          description: 商品カナ
+          example: リンゴ
+        price:
+          type: integer
+          description: 金額
+          example: 1000
+        comment:
+          type: string
+          description: 商品に対するコメント
+          example: 果物といえばこれ！
+        image_url:
+          type: string
+          description: 商品のイメージ画像URL
+          example: ./img/products/apple.jpg
+        stock:
+          type: integer
+          description: 商品の在庫数
+          example: 100
     GetStocks:
       type: object
       description: 在庫リスト取得時のレスポンスオブジェクト
@@ -320,6 +548,10 @@ components:
           description: 在庫のリスト
           items:
             $ref: '#/components/schemas/Stock'
+        matched:
+          type: integer
+          description: 該当件数 
+          example: 1
     GetStock:
       type: object
       description: 在庫取得時のレスポンスオブジェクト

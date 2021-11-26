@@ -1,17 +1,19 @@
 package com.ibm.jp.ibmconsulting.icw.api.domain;
 
 import javax.validation.constraints.NotNull;
+
 import com.ibm.jp.ibmconsulting.icw.api.common.validation.ValidateHelper;
+
 import lombok.Getter;
 
 @Getter
-public class Stock {
-  @NotNull private String itemId;
+public class Item {
+  @NotNull private String id;
 
-  @NotNull private StockAttributes attributes;
+  @NotNull private ItemAttributes attributes;
 
-  public Stock(String itemId, StockAttributes attributes) {
-    this.itemId = itemId;
+  public Item(String id, ItemAttributes attributes) {
+    this.id = id;
     this.attributes = attributes;
     ValidateHelper.validate(this);
   }

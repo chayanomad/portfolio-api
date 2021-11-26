@@ -17,14 +17,16 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "STOCKS")
 public class Stocks {
-  @Id private String id;
+  @Id
+  @Column(name = "ITEM_ID")
+  private String itemId;
 
   @Column(name = "AMOUNT")
   @NotNull
   private int amount;
 
-  public Stocks(String id, int amount) {
-    this.id = id;
+  public Stocks(String itemId, int amount) {
+    this.itemId = itemId;
     this.amount = amount;
     ValidateHelper.validate(this);
   }
@@ -32,7 +34,7 @@ public class Stocks {
   public Stock convert() {
     final StockAttributes attributes = 
         StockAttributes.builder().amount(amount).build();
-    return new Stock(id, attributes);
+    return new Stock(itemId, attributes);
   }
 
   public void update(StockAttributes attributes) {

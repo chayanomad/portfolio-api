@@ -18,6 +18,44 @@ Content-Type: application/json
 Accept: application/json
 
 # ---------------------------------------------------------------------
+# GET /items
+#  商品情報検索
+# ---------------------------------------------------------------------
+### 正常ケース
+GET http://localhost:8091/api/items?name=り&category=FRUIT&category=JUICE&sort=price&order=desc
+Content-Type: application/json
+Accept: application/json
+
+### 異常ケース
+GET http://localhost:8091/api/items?minprice=1000&maxprice=100
+Content-Type: application/json
+Accept: application/json
+
+### 異常ケース
+GET http://localhost:8091/api/items?category=DUMMY
+Content-Type: application/json
+Accept: application/json
+
+# ---------------------------------------------------------------------
+# GET /items
+#  商品情報検索
+# ---------------------------------------------------------------------
+### 正常ケース
+GET http://localhost:8091/api/items/AA000030
+Content-Type: application/json
+Accept: application/json
+
+### 異常ケース
+GET http://localhost:8091/api/items/りんご
+Content-Type: application/json
+Accept: application/json
+
+### 異常ケース
+GET http://localhost:8091/api/items/a
+Content-Type: application/json
+Accept: application/json
+
+# ---------------------------------------------------------------------
 # GET /stocks
 #  在庫情報検索
 # ---------------------------------------------------------------------

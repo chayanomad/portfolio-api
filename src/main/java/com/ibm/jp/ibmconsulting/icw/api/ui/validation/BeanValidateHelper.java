@@ -24,6 +24,11 @@ public final class BeanValidateHelper {
   private static Set<Error> validate(final BeanValidationTarget target) {
     final Set<Error> errors = new HashSet<>();
 
+    /** 独自の検証があれば、実行する */
+    if (target instanceof CustomValidationTarget) {
+      errors.addAll(((CustomValidationTarget) target).customValidate());
+    }
+
     final Set<ConstraintViolation<BeanValidationTarget>> violations = validator.validate(target);
     if (violations.isEmpty()) {
       return errors;

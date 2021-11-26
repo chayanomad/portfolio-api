@@ -16,5 +16,5 @@ import javax.persistence.metamodel.StaticMetamodel;
 })
 @StaticMetamodel(Stocks.class)
 public class Stocks_ {
-  public static volatile SingularAttribute<Stocks, String> id;
+  public static volatile SingularAttribute<Stocks, String> itemId;
 }

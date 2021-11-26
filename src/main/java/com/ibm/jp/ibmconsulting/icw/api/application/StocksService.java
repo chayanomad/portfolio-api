@@ -10,7 +10,6 @@ import com.ibm.jp.ibmconsulting.icw.api.domain.StockRepository;
 import com.ibm.jp.ibmconsulting.icw.api.domain.query.PaginationCondition;
 import com.ibm.jp.ibmconsulting.icw.api.domain.query.StockQueryCondition;
 import com.ibm.jp.ibmconsulting.icw.api.domain.query.StockQueryResult;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @ApplicationScope
 @RequiredArgsConstructor
-public class stocksService {
+public class StocksService {
   @Autowired private StockRepository repository;
 
   public StockQueryResult query(StockQueryCondition condition, PaginationCondition pCondition) {
@@ -40,7 +39,7 @@ public class stocksService {
       throw new StockNotInStockException(id, stock.getAttributes().getAmount());
     }
     final StockAttributes attributes = stock.getAttributes().buyStockUpdated(amount);
-    final Stock updatedStock = repository.update(stock.getId(), attributes);
+    final Stock updatedStock = repository.update(stock.getItemId(), attributes);
     
     return updatedStock;
   }
@@ -49,10 +48,10 @@ public class stocksService {
     return stocks
         .stream()
         .peek(s -> {
-            final String id = s.getId();
+            final String id = s.getItemId();
             final Stock stock = repository.find(id).orElseThrow(() -> new StockNotFoundException(id));
             final StockAttributes attributes = stock.getAttributes().getStockUpdated(s.getAttributes().getAmount());
-            s = repository.update(stock.getId(), attributes);})
+            s = repository.update(stock.getItemId(), attributes);})
         .collect(Collectors.toList());
   }
 }
