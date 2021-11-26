@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @ApplicationScope
 @RequiredArgsConstructor
-public class stocksService {
+public class StocksService {
   @Inject private final StockRepository repository;
 
   public StockQueryResult query(StockQueryCondition condition, PaginationCondition pCondition) {
