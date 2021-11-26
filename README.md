@@ -12,6 +12,7 @@ APIのインターフェースについては、`docs/interface/api-spec-stocks.
 
 ```bash
 git clone https://github.ibm.com/Riku-Hashiki/icw-api.git
+cd icw-api
 ```
 
 Dockerコンテナを作成し、以下のように起動する。
@@ -27,7 +28,7 @@ docker run --name icw-api -d -p 8091:8091 icw-api:1.0
 疎通確認は以下のように取ってください。
 
 ```bash
-curl -X GET http://localhost:8091/api/healthcheck/app/status
+curl http://localhost:8091/api/healthcheck/app/status
 ```
 
 ログは以下のコマンドで確認できます。

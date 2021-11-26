@@ -1,6 +1,8 @@
 package com.ibm.jp.ibmconsulting.icw.api.ui.stocks;
 
 import java.util.List;
+
+import javax.inject.Inject;
 import com.ibm.jp.ibmconsulting.icw.api.application.StocksService;
 import com.ibm.jp.ibmconsulting.icw.api.common.log.Logging;
 import com.ibm.jp.ibmconsulting.icw.api.domain.Stock;
@@ -22,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("stocks")
 @RequiredArgsConstructor
 public class StocksResource {
-  final private StocksService service;
+  @Inject private final StocksService service;
 
   /** 在庫検索API */
   @GetMapping(
