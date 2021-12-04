@@ -1,16 +1,16 @@
-package com.ibm.jp.ibmconsulting.icw.api.ui.items;
+package com.ibm.jp.ibmconsulting.icw.api.ui.products;
 
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ibm.jp.ibmconsulting.icw.api.common.validation.ValidateHelper;
-import com.ibm.jp.ibmconsulting.icw.api.domain.Item;
-import com.ibm.jp.ibmconsulting.icw.api.domain.ItemAttributes;
+import com.ibm.jp.ibmconsulting.icw.api.domain.Product;
+import com.ibm.jp.ibmconsulting.icw.api.domain.ProductAttributes;
 
 import lombok.Getter;
 
 @Getter
-public class ItemResponse {
+public class ProductResponse {
   @NotNull private final String id;
   
   @NotNull private final String category;
@@ -30,8 +30,8 @@ public class ItemResponse {
   @NotNull
   private final int stock;
 
-  public ItemResponse(Item item) {
-    final ItemAttributes attributes = item.getAttributes();
+  public ProductResponse(Product item) {
+    final ProductAttributes attributes = item.getAttributes();
     this.id = item.getId();
     this.category = attributes.getCategory().name();
     this.name = attributes.getName();

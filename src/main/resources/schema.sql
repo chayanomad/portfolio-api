@@ -2,7 +2,7 @@
 -- ITEMS
 --  商品情報テーブル
 --------------------------------------------------
-create table Items (
+create table Products (
     id varchar(10) not null,
     category varchar(10) not null,
     name varchar(100) not null,
@@ -13,42 +13,42 @@ create table Items (
 
     primary key (id)
 );
-create index items_ix1 on items(id);
-create index items_ix2 on items(category);
-create index items_ix3 on items(name, kana);
-create index items_ix4 on items(kana);
-create index items_ix5 on items(price);
+create index products_ix1 on products(id);
+create index products_ix2 on products(category);
+create index products_ix3 on products(name, kana);
+create index products_ix4 on products(kana);
+create index products_ix5 on products(price);
 
 --------------------------------------------------
 -- STOCKS
 --  在庫情報テーブル
 --------------------------------------------------
 create table Stocks (
-    item_id varchar(10) not null,
+    product_id varchar(10) not null,
     amount int not null,
 
-    primary key (item_id),
-    foreign key (item_id) references items(id)
+    primary key (product_id),
+    foreign key (product_id) references products(id)
         on update no action
         on delete cascade
 );
-create index stocks_ix1 on stocks(item_id);
+create index stocks_ix1 on stocks(product_id);
 
 --------------------------------------------------
 -- ITEMS_SUMMARIES
 --  商品情報一覧を取得するためのVIEW
 --------------------------------------------------
-create view item_summaries as
+create view product_summaries as
 select
-  i.id,
-  i.category,
-  i.name,
-  i.kana,
-  i.price,
-  i.comment,
-  i.image_url,
+  p.id,
+  p.category,
+  p.name,
+  p.kana,
+  p.price,
+  p.comment,
+  p.image_url,
   s.amount,
-from items i
+from products p
 LEFT JOIN stocks s
-  on i.id = s.item_id
+  on p.id = s.product_id
 ;

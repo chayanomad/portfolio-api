@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ItemQueryCondition {
+public class ProductQueryCondition {
   private String name;
   private List<String> categories;
   private Integer minPrice;

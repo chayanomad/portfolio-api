@@ -20,7 +20,7 @@ servers:
 tags:
   - name: healthcheck
     description: ヘルスチェックAPI
-  - name: items
+  - name: products
     description: 商品関連API
   - name: stocks
     description: 在庫管理API
@@ -70,10 +70,10 @@ paths:
               examples:
                 E500-001:
                   $ref: '#/components/examples/InternalServerError'
-  /items:
+  /products:
     get:
       tags:
-        - items
+        - products
       summary: 商品取得クエリ検索
       description: |-
         商品情報をクエリで取得するAPI
@@ -165,7 +165,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetItems'
+                $ref: '#/components/schemas/GetProducts'
         '400':
           description: 入力値フォーマット不正
           content:
@@ -184,10 +184,10 @@ paths:
               examples:
                 E500-001:
                   $ref: '#/components/examples/InternalServerError'
-  /items/{id}:
+  /products/{id}:
     get:
       tags:
-        - items
+        - products
       summary: 商品情報取得
       description: |-
         商品情報を取得するAPI
@@ -212,7 +212,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
+                $ref: '#/components/schemas/Product'
         '400':
           description: 入力値フォーマット不正
           content:
@@ -426,12 +426,12 @@ paths:
             schema:
               type: object
               required:
-                - items
+                - products
               properties:
-                items:
+                products:
                   type: array
                   description: 商品リスト
-                  items:
+                  products:
                     $ref: '#/components/schemas/Stock'
       responses:
         '200':
@@ -471,23 +471,23 @@ components:
           type: string
           description: 動作確認結果
           example: "OK"
-    GetItems:
+    GetProducts:
       type: object
       description: 商品リスト取得時のレスポンスオブジェクト
       required:
-        - items
+        - products
         - matched
       properties:
-        items:
+        products:
           type: array
           description: 商品のリスト
           items:
-            $ref: '#/components/schemas/Item'
+            $ref: '#/components/schemas/Product'
         matched:
           type: integer
           description: 該当件数 
           example: 1
-    Item:
+    Product:
       type: object
       description: 商品
       required:

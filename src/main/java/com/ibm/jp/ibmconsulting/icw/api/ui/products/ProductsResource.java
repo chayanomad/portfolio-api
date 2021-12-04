@@ -1,13 +1,13 @@
-package com.ibm.jp.ibmconsulting.icw.api.ui.items;
+package com.ibm.jp.ibmconsulting.icw.api.ui.products;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import com.ibm.jp.ibmconsulting.icw.api.application.ItemsService;
+import com.ibm.jp.ibmconsulting.icw.api.application.ProductsService;
 import com.ibm.jp.ibmconsulting.icw.api.common.log.Logging;
-import com.ibm.jp.ibmconsulting.icw.api.domain.Item;
-import com.ibm.jp.ibmconsulting.icw.api.domain.query.ItemQueryResult;
+import com.ibm.jp.ibmconsulting.icw.api.domain.Product;
+import com.ibm.jp.ibmconsulting.icw.api.domain.query.ProductQueryResult;
 import com.ibm.jp.ibmconsulting.icw.api.ui.validation.BeanValidateHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("items")
+@RequestMapping("products")
 @RequiredArgsConstructor
-public class ItemsResource {
-  @Inject private final ItemsService service;
+public class ProductsResource {
+  @Inject private final ProductsService service;
 
   /** 商品検索API */
   @GetMapping(
@@ -41,7 +41,7 @@ public class ItemsResource {
 
     BeanValidateHelper.validate(query);
 
-    final ItemQueryResult result =
+    final ProductQueryResult result =
         service.query(
             query.toItemQueryCondition(),
             query.toPaginationCondition());
@@ -54,11 +54,11 @@ public class ItemsResource {
       value = "{id}",
       produces = { "application/json" })
   @Logging
-  public ResponseEntity<ItemResponse> getItem(
+  public ResponseEntity<ProductResponse> getItem(
       @PathVariable("id") String params1) {
     
-    final Item response = service.get(params1);
+    final Product response = service.get(params1);
     
-    return new ResponseEntity<ItemResponse>(new ItemResponse(response), HttpStatus.OK);
+    return new ResponseEntity<ProductResponse>(new ProductResponse(response), HttpStatus.OK);
   }
 }

@@ -18,40 +18,40 @@ Content-Type: application/json
 Accept: application/json
 
 # ---------------------------------------------------------------------
-# GET /items
+# GET /products
 #  商品情報検索
 # ---------------------------------------------------------------------
 ### 正常ケース
-GET http://localhost:8091/api/items?name=り&category=FRUIT&category=JUICE&sort=price&order=desc
+GET http://localhost:8091/api/products?name=り&category=FRUIT&category=JUICE&sort=price&order=desc
 Content-Type: application/json
 Accept: application/json
 
 ### 異常ケース
-GET http://localhost:8091/api/items?minprice=1000&maxprice=100
+GET http://localhost:8091/api/products?minprice=1000&maxprice=100
 Content-Type: application/json
 Accept: application/json
 
 ### 異常ケース
-GET http://localhost:8091/api/items?category=DUMMY
+GET http://localhost:8091/api/products?category=DUMMY
 Content-Type: application/json
 Accept: application/json
 
 # ---------------------------------------------------------------------
-# GET /items
+# GET /products
 #  商品情報検索
 # ---------------------------------------------------------------------
 ### 正常ケース
-GET http://localhost:8091/api/items/AA000030
+GET http://localhost:8091/api/products/AA000030
 Content-Type: application/json
 Accept: application/json
 
 ### 異常ケース
-GET http://localhost:8091/api/items/りんご
+GET http://localhost:8091/api/products/りんご
 Content-Type: application/json
 Accept: application/json
 
 ### 異常ケース
-GET http://localhost:8091/api/items/a
+GET http://localhost:8091/api/products/a
 Content-Type: application/json
 Accept: application/json
 

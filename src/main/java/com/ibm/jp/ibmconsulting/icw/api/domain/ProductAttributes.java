@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder(builderClassName = "Builder", buildMethodName = "build")
-public class ItemAttributes {
+public class ProductAttributes {
   @NotNull private Category category;
 
   @NotNull private String name;
@@ -23,9 +23,9 @@ public class ItemAttributes {
   @NotNull private int amount;
 
   public static class Builder {
-    public ItemAttributes buidl() {
-      final ItemAttributes attributes =
-        new ItemAttributes(category, name, kana, price, comment, imageURL, amount);
+    public ProductAttributes build() {
+      final ProductAttributes attributes =
+        new ProductAttributes(category, name, kana, price, comment, imageURL, amount);
       ValidateHelper.validate(this);
       return attributes;
     }

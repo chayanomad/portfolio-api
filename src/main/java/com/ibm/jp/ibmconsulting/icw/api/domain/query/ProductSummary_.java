@@ -14,14 +14,14 @@ import javax.persistence.metamodel.StaticMetamodel;
   "PMD.TooManyFields",
   "PMD.UseUtilityClass"
 })
-@StaticMetamodel(ItemSummary.class)
-public class ItemSummary_ {
-  public static volatile SingularAttribute<ItemSummary, String> id;
-  public static volatile SingularAttribute<ItemSummary, String> category;
-  public static volatile SingularAttribute<ItemSummary, String> name;
-  public static volatile SingularAttribute<ItemSummary, String> kana;
-  public static volatile SingularAttribute<ItemSummary, Integer> price;
-  public static volatile SingularAttribute<ItemSummary, Integer> amount;
+@StaticMetamodel(ProductSummary.class)
+public class ProductSummary_ {
+  public static volatile SingularAttribute<ProductSummary, String> id;
+  public static volatile SingularAttribute<ProductSummary, String> category;
+  public static volatile SingularAttribute<ProductSummary, String> name;
+  public static volatile SingularAttribute<ProductSummary, String> kana;
+  public static volatile SingularAttribute<ProductSummary, Integer> price;
+  public static volatile SingularAttribute<ProductSummary, Integer> amount;
 
   /**
    * 指定したalias keyに紐づくSingularAttributeを返す。紐づくものがない場合はnullを返す。
@@ -29,7 +29,7 @@ public class ItemSummary_ {
    * @param key alias key
    * @return
    */
-  public static SingularAttribute<ItemSummary, ?> getSingularAttribute(String key) {
+  public static SingularAttribute<ProductSummary, ?> getSingularAttribute(String key) {
     switch (key) {
       case "id":
         return id;

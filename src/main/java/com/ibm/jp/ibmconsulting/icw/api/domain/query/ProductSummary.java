@@ -6,8 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.ibm.jp.ibmconsulting.icw.api.domain.Category;
-import com.ibm.jp.ibmconsulting.icw.api.domain.Item;
-import com.ibm.jp.ibmconsulting.icw.api.domain.ItemAttributes;
+import com.ibm.jp.ibmconsulting.icw.api.domain.Product;
+import com.ibm.jp.ibmconsulting.icw.api.domain.ProductAttributes;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +17,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "ITEM_SUMMARIES")
-public class ItemSummary {
+@Table(name = "PRODUCT_SUMMARIES")
+public class ProductSummary {
   @Id
   private String id;
 
@@ -43,7 +43,7 @@ public class ItemSummary {
   @Column(name = "AMOUNT")
   private int amount;
 
-  public ItemSummary(
+  public ProductSummary(
       String id,
       String category,
       String name,
@@ -62,9 +62,9 @@ public class ItemSummary {
     this.amount = amount;
   }
 
-  public Item convert() {
-    final ItemAttributes attributes =
-        ItemAttributes.builder()
+  public Product convert() {
+    final ProductAttributes attributes =
+        ProductAttributes.builder()
             .category(Category.valueOf(category))
             .name(name)
             .kana(kana)
@@ -73,6 +73,6 @@ public class ItemSummary {
             .imageURL(imageURL)
             .amount(amount)
             .build();
-    return new Item(id, attributes);
+    return new Product(id, attributes);
   }
 }

@@ -13,41 +13,41 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 
-import com.ibm.jp.ibmconsulting.icw.api.domain.query.ItemQueryCondition;
-import com.ibm.jp.ibmconsulting.icw.api.domain.query.ItemSummary;
-import com.ibm.jp.ibmconsulting.icw.api.domain.query.ItemSummary_;
+import com.ibm.jp.ibmconsulting.icw.api.domain.query.ProductQueryCondition;
+import com.ibm.jp.ibmconsulting.icw.api.domain.query.ProductSummary;
+import com.ibm.jp.ibmconsulting.icw.api.domain.query.ProductSummary_;
 import com.ibm.jp.ibmconsulting.icw.api.domain.query.PaginationCondition;
 
-public class ItemQueryAgent {
+public class ProductQueryAgent {
   
   private final EntityManager manager;
-  private final ItemQueryCondition condition;
+  private final ProductQueryCondition condition;
   private final PaginationCondition pCondition;
 
-  public ItemQueryAgent(
+  public ProductQueryAgent(
       EntityManager manager,
-      ItemQueryCondition condition,
+      ProductQueryCondition condition,
       PaginationCondition pCondition) {
     this.manager = manager;
     this.condition = condition;
     this.pCondition = pCondition;
   }
 
-  protected List<ItemSummary> getItems() {
+  protected List<ProductSummary> getItems() {
     final CriteriaBuilder cb = manager.getCriteriaBuilder();
-    final CriteriaQuery<ItemSummary> cq = cb.createQuery(ItemSummary.class);
-    final Root<ItemSummary> items = cq.from(ItemSummary.class);
+    final CriteriaQuery<ProductSummary> cq = cb.createQuery(ProductSummary.class);
+    final Root<ProductSummary> products = cq.from(ProductSummary.class);
 
-    cq.where(where(cb, items));
+    cq.where(where(cb, products));
     // ソートキーの設定
-    final SingularAttribute<ItemSummary, ?> attribute =
-        ItemSummary_.getSingularAttribute(pCondition.getSort());
+    final SingularAttribute<ProductSummary, ?> attribute =
+        ProductSummary_.getSingularAttribute(pCondition.getSort());
     if (Objects.nonNull(attribute)) {
       Order order;
       if (pCondition.isAscending()) {
-        order = cb.asc(items.get(attribute));
+        order = cb.asc(products.get(attribute));
       } else {
-        order = cb.desc(items.get(attribute));
+        order = cb.desc(products.get(attribute));
       }
       cq.orderBy(order);
     }
@@ -67,10 +67,10 @@ public class ItemQueryAgent {
   protected Long getCount() {
     final CriteriaBuilder cb = manager.getCriteriaBuilder();
     final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-    final Root<ItemSummary> items = cq.from(ItemSummary.class);
+    final Root<ProductSummary> products = cq.from(ProductSummary.class);
     // 検索条件の指定
-    cq.where(where(cb, items));
-    cq.select(cb.count(items));
+    cq.where(where(cb, products));
+    cq.select(cb.count(products));
 
     return manager.createQuery(cq).getSingleResult();
   }
@@ -79,10 +79,10 @@ public class ItemQueryAgent {
    * クエリ条件を基にしたPredicateを作成する
    * 
    * @param cb
-   * @param items
+   * @param products
    * @return
    */
-  private Predicate where(CriteriaBuilder cb, Root<ItemSummary> items) {
+  private Predicate where(CriteriaBuilder cb, Root<ProductSummary> products) {
     final List<Predicate> whereConditions = new ArrayList<>();
     // 商品名
     condition
@@ -92,9 +92,9 @@ public class ItemQueryAgent {
               whereConditions.add(
                   cb.or(
                       cb.like(
-                          items.get(ItemSummary_.name), "%" + name + "%"),
+                          products.get(ProductSummary_.name), "%" + name + "%"),
                       cb.like(
-                          items.get(ItemSummary_.kana), "%" + name + "%")));
+                          products.get(ProductSummary_.kana), "%" + name + "%")));
             });
     
     // カテゴリー
@@ -107,7 +107,7 @@ public class ItemQueryAgent {
                       .stream()
                       .map(
                           c -> 
-                              cb.equal(items.get(ItemSummary_.category), c))
+                              cb.equal(products.get(ProductSummary_.category), c))
                       .collect(Collectors.toList());
               if (!categoryConditions.isEmpty()) {
                 whereConditions.add(cb.or(categoryConditions.stream().toArray(Predicate[]::new)));
@@ -120,7 +120,7 @@ public class ItemQueryAgent {
         .ifPresent(
             minPrice -> {
               whereConditions.add(
-                  cb.greaterThanOrEqualTo(items.get(ItemSummary_.price), minPrice));
+                  cb.greaterThanOrEqualTo(products.get(ProductSummary_.price), minPrice));
             });
       
     // 上限金額
@@ -129,7 +129,7 @@ public class ItemQueryAgent {
         .ifPresent(
             maxPrice -> {
               whereConditions.add(
-                  cb.lessThanOrEqualTo(items.get(ItemSummary_.price), maxPrice));
+                  cb.lessThanOrEqualTo(products.get(ProductSummary_.price), maxPrice));
             });
     
     return cb.and(whereConditions.stream().toArray(Predicate[]::new));

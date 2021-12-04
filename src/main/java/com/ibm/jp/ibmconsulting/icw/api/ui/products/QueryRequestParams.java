@@ -1,4 +1,4 @@
-package com.ibm.jp.ibmconsulting.icw.api.ui.items;
+package com.ibm.jp.ibmconsulting.icw.api.ui.products;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.validation.constraints.Min;
 import com.ibm.jp.ibmconsulting.icw.api.common.validation.SelectiveItem;
 import com.ibm.jp.ibmconsulting.icw.api.common.validation.SelectiveItemList;
-import com.ibm.jp.ibmconsulting.icw.api.domain.query.ItemQueryCondition;
+import com.ibm.jp.ibmconsulting.icw.api.domain.query.ProductQueryCondition;
 import com.ibm.jp.ibmconsulting.icw.api.domain.query.PaginationCondition;
 import com.ibm.jp.ibmconsulting.icw.api.ui.error.Error;
 import com.ibm.jp.ibmconsulting.icw.api.ui.validation.BeanValidationTarget;
@@ -65,8 +65,8 @@ public class QueryRequestParams implements BeanValidationTarget, CustomValidatio
             : 0;
   }
 
-  public ItemQueryCondition toItemQueryCondition() {
-    return ItemQueryCondition.builder()
+  public ProductQueryCondition toItemQueryCondition() {
+    return ProductQueryCondition.builder()
         .name(name)
         .categories(categories)
         .minPrice(minPrice)
