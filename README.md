@@ -1,12 +1,80 @@
-# API起動方法
+# APIの概要
 
-ICW用の在庫管理APIを起動する方法を紹介します。
+本APIはICWで利用されることを想定した商品検索兼在庫管理APIです。
 
-## APIのインターフェース
+このドキュメントでは、APIの役割やデータの説明、起動方法などを説明します。
+
+## APIの役割
+
+本APIが果たすべき役割について説明します。
+
+### APIのインターフェース
 
 APIのインターフェースについては、`docs/interface/api-spec-stocks.html` を参照してください。
 
-## Dockerコンテナ起動
+### 役割
+
+主に商品検索、在庫管理を行う際に利用されることを想定したAPIです。
+
+### 利用想定
+
+パブリックなAPIではありません。OSSのように利用されることを想定しています。
+
+利用する際は、本リポジトリをクローンし、自身のサーバーにコンテナ化してデプロイする必要があります。
+
+#### データについて
+
+本APIはDBとの一体型です。したがって、データ構造やデータはあらかじめ定められた形式に則っています。
+
+テーブル作成用のDDLは `src/main/resources/schema.sql` , データ挿入用のDDLは `src/main/resources/data.sql` にあります。
+
+このファイルの内容を変更しても、変更内容は反映されませんのでご注意ください。
+
+どうしても好きなデータ構造にしたいという方がいらっしゃいましたら、[付録](#付録)を参照ください。
+
+#### データ構造説明
+
+* Products
+
+```sql
+create table Products (
+    id varchar(10) not null,         -- 商品ID。プライマリーキー
+    category varchar(10) not null,   -- カテゴリー。enum
+    name varchar(100) not null,      -- 商品名
+    kana varchar(150) not null,      -- 商品カナ
+    price int not null,              -- 金額
+    comment varchar(300) not null,   -- コメント。
+    image_url varchar(100) not null, -- 商品の画像URL
+
+    primary key (id)
+);
+```
+
+* Stocks
+  
+```sql
+create table Stocks (
+    product_id varchar(10) not null,           -- 商品ID。プライマリーキー。外部キー
+    amount int not null,                       -- 在庫数
+
+    primary key (product_id),
+    foreign key (product_id) references products(id)
+        on update no action
+        on delete cascade
+
+    primary key (id)
+);
+```
+
+なお、`Products.image_url` には `./img/products/tomato.jpg` などの文字列が入っていますので、適宜各自のリポジトリに同等の名前のイメージファイルを配置することで、画像を表示させることができます。
+
+是非ご利用ください。
+
+## APIの起動方法
+
+ICW用の商品検索兼在庫管理APIを起動する方法を紹介します。
+
+### Dockerコンテナ起動
 
 [こちら](https://github.ibm.com/Riku-Hashiki/icw-api.git)からプロジェクトをクローン。
 
@@ -37,15 +105,15 @@ curl http://localhost:8091/api/healthcheck/app/status
 docker logs -f icw-api
 ```
 
-## Kubernetesにデプロイ
+### Kubernetesにデプロイ
 
 作ったコンテナをKubernetesにデプロイします。
 
-### クラスタ作成
+#### クラスタ作成
 
 IBM CloudでKubernetesフリークラスターを作成してください。
 
-### コンテナレジストリ
+#### コンテナレジストリ
 
 作成している間に、コンテナレジストリのセットアップをします。
 
@@ -73,7 +141,7 @@ docker push jp.icr.io/名前空間/icw-api:1.0
 
 これでコンテナレジストリにプッシュが完了しました。
 
-### デプロイ
+#### デプロイ
 
 Kubernetesにコンテナをデプロイしていきます。
 
@@ -96,7 +164,7 @@ kubectl apply -f k8s/service.yaml
 
 これでデプロイが完了しました。
 
-### 疎通確認
+#### 疎通確認
 
 疎通確認をします。  
 以下コマンドで疎通に必要な情報を取ってきましょう。
@@ -111,7 +179,7 @@ ibmcloud ks workers --cluster クラスタ名
 
 これで、`http://{外部IPアドレス}:{3XXXX}` でアクセスできるので、ヘルスチェック等を打ってみてください。
 
-### ログ確認
+#### ログ確認
 
 クラスタ上のpodのログは以下のコマンドで確認できます。
 
@@ -126,7 +194,7 @@ kubectl logs -f pod名
 `-f`　オプションはフォローオプションです。(ターミナルにログを表示し続ける)  
 もう見たくないって方は `Ctrl+C` で抜けましょう。
 
-### h2 console表示
+#### h2 console表示
 
 このAPIは `Spring Boot` のインメモリDBを利用しています。  
 インメモリDBとして `H2DB` を採用しているので、`H2 Console` を表示することができます。
@@ -150,4 +218,18 @@ kubectl apply -f k8s/deployment.yaml
 
 ## serviceを作成(※外部アクセスが必要な時のみ)
 kubectl apply -f k8s/service.yaml
+```
+
+## 付録
+
+本APIに修正を加えた際は、以下のようにコマンドを打ち、出来上がった `jarファイル` を `releaseフォルダ` に配置することで、修正後のコンテナを作成することができます。
+
+しかし、以下コマンドはlinux用です。Powershellなどでは動きませんので、あらかじめご了承ください。
+
+```bash
+## APIのビルドコマンド
+./gradlew build
+
+## APIの起動コマンド
+./gradlew bootRun
 ```
