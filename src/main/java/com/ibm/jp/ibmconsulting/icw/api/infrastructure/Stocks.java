@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 @Table(name = "STOCKS")
 public class Stocks {
   @Id
-  @Column(name = "ITEM_ID")
-  private String itemId;
+  @Column(name = "PRODUCT_ID")
+  private String productId;
 
   @Column(name = "AMOUNT")
   @NotNull
   private int amount;
 
-  public Stocks(String itemId, int amount) {
-    this.itemId = itemId;
+  public Stocks(String productId, int amount) {
+    this.productId = productId;
     this.amount = amount;
     ValidateHelper.validate(this);
   }
@@ -34,7 +34,7 @@ public class Stocks {
   public Stock convert() {
     final StockAttributes attributes = 
         StockAttributes.builder().amount(amount).build();
-    return new Stock(itemId, attributes);
+    return new Stock(productId, attributes);
   }
 
   public void update(StockAttributes attributes) {

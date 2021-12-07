@@ -60,7 +60,7 @@ public class StockQueryAgent {
     condition
         .getIds()
         .ifPresent(
-            ids -> whereConditions.add(stocks.get(Stocks_.itemId).in(ids)));
+            ids -> whereConditions.add(stocks.get(Stocks_.productId).in(ids)));
     return cb.and(whereConditions.stream().toArray(Predicate[]::new));
   }
 }
