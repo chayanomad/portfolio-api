@@ -18,7 +18,7 @@ APIのインターフェースについては、`docs/interface/api-spec-stocks.
 
 ### 利用想定
 
-パブリックなAPIではありません。OSSのように利用されることを想定しています。
+パブリックなAPIではありません。
 
 利用する際は、本リポジトリをクローンし、自身のサーバーにコンテナ化してデプロイする必要があります。
 
@@ -39,11 +39,11 @@ APIのインターフェースについては、`docs/interface/api-spec-stocks.
 ```sql
 create table Products (
     id varchar(10) not null,         -- 商品ID。プライマリーキー
-    category varchar(10) not null,   -- カテゴリー。enum
+    category varchar(10) not null,   -- カテゴリー。enumで表現される。FRUIT, VEGETABLE, JUICE
     name varchar(100) not null,      -- 商品名
     kana varchar(150) not null,      -- 商品カナ
     price int not null,              -- 金額
-    comment varchar(300) not null,   -- コメント。
+    comment varchar(300) not null,   -- コメント
     image_url varchar(100) not null, -- 商品の画像URL
 
     primary key (id)
@@ -61,8 +61,6 @@ create table Stocks (
     foreign key (product_id) references products(id)
         on update no action
         on delete cascade
-
-    primary key (id)
 );
 ```
 
@@ -191,7 +189,7 @@ kubectl get pods
 kubectl logs -f pod名
 ```
 
-`-f`　オプションはフォローオプションです。(ターミナルにログを表示し続ける)  
+`-f` オプションはフォローオプションです。(ターミナルにログを表示し続ける)  
 もう見たくないって方は `Ctrl+C` で抜けましょう。
 
 #### h2 console表示
