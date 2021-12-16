@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: jp.icr.io/txx-hashiki-ns/api-icw:1.0 
+          image: jp.icr.io/txx-hashiki-ns/icw-api:1.0 
           command:
           ports:
             - containerPort: 80

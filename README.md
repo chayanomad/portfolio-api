@@ -131,7 +131,7 @@ ibmcloud cr login
 
 ## 先ほど作ったコンテナに別のタグを付ける
 ## 名前空間はさっき作成したものに置き換える
-docker tag api-icw:1.0 jp.icr.io/名前空間/icw-api:1.0
+docker tag icw-api:1.0 jp.icr.io/名前空間/icw-api:1.0
 
 ## コンテナレジストリにプッシュ
 docker push jp.icr.io/名前空間/icw-api:1.0
