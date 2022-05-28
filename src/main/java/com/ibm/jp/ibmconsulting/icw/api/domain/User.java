@@ -7,12 +7,12 @@ import com.ibm.jp.ibmconsulting.icw.api.common.validation.ValidateHelper;
 import lombok.Getter;
 
 @Getter
-public class Product {
+public class User {
   @NotNull private String id;
 
-  @NotNull private ProductAttributes attributes;
+  @NotNull private UserAttributes attributes;
 
-  public Product(String id, ProductAttributes attributes) {
+  public User(String id, UserAttributes attributes) {
     this.id = id;
     this.attributes = attributes;
     ValidateHelper.validate(this);

@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  postgresql:
+    container_name: postgresql
+    build: ./db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/config:/docker-entrypoint-initdb.d
+    env_file:
+      - ./db/env.list
+    privileged: true
+    hostname: postgres
+    

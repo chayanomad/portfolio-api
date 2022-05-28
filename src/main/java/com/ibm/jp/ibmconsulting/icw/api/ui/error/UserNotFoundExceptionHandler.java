@@ -1,6 +1,6 @@
 package com.ibm.jp.ibmconsulting.icw.api.ui.error;
 
-import com.ibm.jp.ibmconsulting.icw.api.domain.ProductNotFoundException;
+import com.ibm.jp.ibmconsulting.icw.api.domain.UserNotFoundException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,10 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
-public class ProductNotFoundExceptionHandler extends ResponseEntityExceptionHandler {
+public class UserNotFoundExceptionHandler extends ResponseEntityExceptionHandler {
   
-  @ExceptionHandler(ProductNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleException(ProductNotFoundException e) {
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleException(UserNotFoundException e) {
     log.error("E400-004", e);
     return ErrorResponse.build("E400-004", e.getId());
   }

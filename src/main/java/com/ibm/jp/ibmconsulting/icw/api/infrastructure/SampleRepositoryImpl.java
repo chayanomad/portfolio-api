@@ -12,12 +12,12 @@ import org.springframework.web.context.annotation.ApplicationScope;
 @ApplicationScope
 public class SampleRepositoryImpl implements SampleRepository {
   @Autowired private EntityManagerFactory factory;
-  private final String sql = "SELECT COUNT(s.id) FROM Stocks s";
+  private final String sql = "SELECT COUNT(u.id) FROM USERS u limit 1";
 
   @Override
   public void touchToRepository() {
     final EntityManager manager = getEntityManager();
-    final Query query = manager.createQuery(sql);
+    final Query query = manager.createNativeQuery(sql);
     query.getSingleResult();
   }
 

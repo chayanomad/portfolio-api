@@ -59,7 +59,7 @@ dependencies {
 
   implementation 'org.slf4j:slf4j-api:1.7.25'
 
-  runtimeOnly 'com.h2database:h2:1.4.200'
+  runtimeOnly 'org.postgresql:postgresql'
 
   compileOnly 'org.projectlombok:lombok'
   annotationProcessor 'org.projectlombok:lombok'
