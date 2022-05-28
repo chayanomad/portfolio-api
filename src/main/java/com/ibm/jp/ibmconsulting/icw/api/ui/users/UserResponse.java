@@ -21,14 +21,6 @@ public class UserResponse {
   @JsonbProperty("last_name")
   private final String lastName;
   
-  @NotNull
-  @JsonbProperty("first_name_kana")
-  private final String firstNameKana;
-  
-  @NotNull
-  @JsonbProperty("last_name_kana")
-  private final String lastNameKana;
-  
   @JsonbProperty("profile_pic_url")
   private final String profilePicUrl;
   
@@ -47,8 +39,6 @@ public class UserResponse {
     this.id = user.getId();
     this.firstName = attributes.getFirstName();
     this.lastName = attributes.getLastName();
-    this.firstNameKana = attributes.getFirstNameKana();
-    this.lastNameKana = attributes.getLastNameKana();
     this.profilePicUrl = attributes.getProfilePicUrl().orElse(null);
     this.introduction = attributes.getIntroduction();
     this.email = attributes.getEmail().orElse(null);

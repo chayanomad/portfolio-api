@@ -1,0 +1,192 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Portfolio
+  description: Portfolioサイトに関連するAPIを定義する。
+servers:
+  - url: 'http://localhost:{port}/{basePath}'
+    description: development server
+    variables:
+      basePath:
+        default: api
+      port:
+        enum:
+          - '8080'
+        default: '8080'
+tags:
+- name: user
+  description: ユーザー関連
+paths:
+  /users:
+    get:
+      tags:
+        - user
+      operationId: users.get
+      summary: ユーザー情報一覧取得
+      description: Portfolioサイトに登録されているユーザー情報の一覧を取得する
+      parameters:
+        - in: header
+          name: Content-Type
+          required: true
+          description: コンテンツタイプ
+          schema:
+            type: string
+            example: "application/json"
+        - in: header
+          name: Accept
+          required: true
+          description: レスポンスのコンテンツタイプ
+          schema:
+            type: string
+            example: "application/json"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: ユーザー情報一覧取得レスポンス
+                required:
+                  - users
+                  - matched
+                properties:
+                  users:
+                    $ref: '#/components/schemas/UserList'
+                  matched:
+                    type: integer
+                    description: マッチ数
+                    example: 1
+  /users/{id}:
+    get:
+      tags:
+        - user
+      operationId: users.get
+      summary: ユーザー情報取得
+      description: Portfolioサイトに登録されているユーザー情報を取得する
+      parameters:
+        - in: header
+          name: Content-Type
+          required: true
+          description: コンテンツタイプ
+          schema:
+            type: string
+            example: "application/json"
+        - in: header
+          name: Accept
+          required: true
+          description: レスポンスのコンテンツタイプ
+          schema:
+            type: string
+            example: "application/json"
+        - in: path
+          name: id
+          required: true
+          description: ユーザーID
+          schema:
+            type: string
+            example: rikkyrice
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+components:
+  schemas:
+    UserList:
+      type: array
+      description: ユーザー情報一覧
+      items:
+        $ref: '#/components/schemas/UserMeta'
+    UserMeta:
+      type: object
+      description: ユーザー
+      required:
+        - id
+        - first_name
+        - last_name
+        - introduction
+      properties:
+        id:
+          type: string
+          description: ユーザーID
+          example: 'aa54abaf-99db-4e85-8e01-8fb952d3ce26'
+        first_name:
+          type: string
+          description: 名前
+          example: 陸
+        last_name:
+          type: string
+          description: 名字
+          example: 橋木
+        profile_pic_url:
+          type: string
+          description: ユーザーアイコン。Amazon S3に保存されているURL
+          example: example_url
+        introduction:
+          type: string
+          description: 自己紹介文
+          example: 自己紹介
+        email:
+          type: string
+          description: メールアドレス
+          example: rikkyrice@gmail.com
+        linked_in:
+          type: string
+          description: LinkedInのアドレス
+          example: ...
+        twitter:
+          type: string
+          description: twitterのアドレス
+          example: ...
+        facebook:
+          type: string
+          description: facebookのアドレス
+          example: ...
+    User:
+      type: object
+      description: ユーザー
+      required:
+        - id
+        - first_name
+        - last_name
+        - introduction
+      properties:
+        id:
+          type: string
+          description: ユーザーID
+          example: 'aa54abaf-99db-4e85-8e01-8fb952d3ce26'
+        first_name:
+          type: string
+          description: 名前
+          example: 陸
+        last_name:
+          type: string
+          description: 名字
+          example: 橋木
+        profile_pic_url:
+          type: string
+          description: ユーザーアイコン。Amazon S3に保存されているURL
+          example: example_url
+        introduction:
+          type: string
+          description: 自己紹介文
+          example: 自己紹介
+        email:
+          type: string
+          description: メールアドレス
+          example: rikkyrice@gmail.com
+        linked_in:
+          type: string
+          description: LinkedInのアドレス
+          example: ...
+        twitter:
+          type: string
+          description: twitterのアドレス
+          example: ...
+        facebook:
+          type: string
+          description: facebookのアドレス
+          example: ...
