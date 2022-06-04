@@ -1,233 +1,90 @@
 # APIの概要
 
-本APIはICWで利用されることを想定した商品検索兼在庫管理APIです。
+## dbの立ち上げ方
 
-このドキュメントでは、APIの役割やデータの説明、起動方法などを説明します。
-
-## APIの役割
-
-本APIが果たすべき役割について説明します。
-
-### APIのインターフェース
-
-APIのインターフェースについては、`docs/interface/api-spec-stocks.html` を参照してください。
-
-### 役割
-
-主に商品検索、在庫管理を行う際に利用されることを想定したAPIです。
-
-### 利用想定
-
-パブリックなAPIではありません。
-
-利用する際は、本リポジトリをクローンし、自身のサーバーにコンテナ化してデプロイする必要があります。
-
-#### データについて
-
-本APIはDBとの一体型です。したがって、データ構造やデータはあらかじめ定められた形式に則っています。
-
-テーブル作成用のDDLは `src/main/resources/schema.sql` , データ挿入用のDDLは `src/main/resources/data.sql` にあります。
-
-このファイルの内容を変更しても、変更内容は反映されませんのでご注意ください。
-
-どうしても好きなデータ構造にしたいという方がいらっしゃいましたら、[付録](#付録)を参照ください。
-
-#### データ構造説明
-
-* Products
-
-```sql
-create table Products (
-    id varchar(10) not null,         -- 商品ID。プライマリーキー
-    category varchar(10) not null,   -- カテゴリー。enumで表現される。FRUIT, VEGETABLE, JUICE
-    name varchar(100) not null,      -- 商品名
-    kana varchar(150) not null,      -- 商品カナ
-    price int not null,              -- 金額
-    comment varchar(300) not null,   -- コメント
-    image_url varchar(100) not null, -- 商品の画像URL
-
-    primary key (id)
-);
-```
-
-* Stocks
-  
-```sql
-create table Stocks (
-    product_id varchar(10) not null,           -- 商品ID。プライマリーキー。外部キー
-    amount int not null,                       -- 在庫数
-
-    primary key (product_id),
-    foreign key (product_id) references products(id)
-        on update no action
-        on delete cascade
-);
-```
-
-なお、`Products.image_url` には `./img/products/tomato.jpg` などの文字列が入っていますので、適宜各自のリポジトリに同等の名前のイメージファイルを配置することで、画像を表示させることができます。
-
-是非ご利用ください。
-
-## APIの起動方法
-
-ICW用の商品検索兼在庫管理APIを起動する方法を紹介します。
-
-### Dockerコンテナ起動
-
-[こちら](https://github.ibm.com/Riku-Hashiki/icw-api.git)からプロジェクトをクローン。
+ルートディレクトリで以下を実行
 
 ```bash
-git clone https://github.ibm.com/Riku-Hashiki/icw-api.git
-cd icw-api
+$ docker-compose up -d
+
+Starting postgresql ... done
 ```
 
-Dockerコンテナを作成し、以下のように起動する。
+## APIの立ち上げ方
 
-```bash
-docker build -t icw-api:1.0 .
-
-docker run --name icw-api -d -p 8091:8091 icw-api:1.0
-```
-
-これで、`http://localhost:8091` にてコンテナが起動しています。
-
-疎通確認は以下のように取ってください。
-
-```bash
-curl http://localhost:8091/api/healthcheck/app/status
-```
-
-ログは以下のコマンドで確認できます。
-
-```bash
-docker logs -f icw-api
-```
-
-### Kubernetesにデプロイ
-
-作ったコンテナをKubernetesにデプロイします。
-
-#### クラスタ作成
-
-IBM CloudでKubernetesフリークラスターを作成してください。
-
-#### コンテナレジストリ
-
-作成している間に、コンテナレジストリのセットアップをします。
-
-コンテナレジストリの名前空間を作成してください。
-
-作成出来たら、以下のコマンドでコンテナレジストリにコンテナをプッシュします。
-
-```bash
-## IBMCloudにCLIからログイン
-ibmcloud login --sso
-
-## リソースグループをDefault、リージョンをjp-tokに設定
-ibmcloud target -g Default -r jp-tok
-
-## コンテナレジストリにログイン
-ibmcloud cr login
-
-## 先ほど作ったコンテナに別のタグを付ける
-## 名前空間はさっき作成したものに置き換える
-docker tag icw-api:1.0 jp.icr.io/名前空間/icw-api:1.0
-
-## コンテナレジストリにプッシュ
-docker push jp.icr.io/名前空間/icw-api:1.0
-```
-
-これでコンテナレジストリにプッシュが完了しました。
-
-#### デプロイ
-
-Kubernetesにコンテナをデプロイしていきます。
-
-まずはIKSに作ったクラスタをCLIで利用できるように構成情報をダウンロードします。
-
-```bash
-## クラスタ名は自分で作成したクラスタの名前
-ibmcloud ks cluster config --cluster クラスタ名
-```
-
-これでさっき作ったフリークラスタにアクセスできるようになっているので、デプロイします。
-
-```bash
-## deploymentを作成
-kubectl apply -f k8s/deployment.yaml
-
-## serviceを作成(※外部アクセスが必要な時のみ)
-kubectl apply -f k8s/service.yaml
-```
-
-これでデプロイが完了しました。
-
-#### 疎通確認
-
-疎通確認をします。  
-以下コマンドで疎通に必要な情報を取ってきましょう。
-
-```bash
-## 外部IPアドレスのどのポートでコンテナが開いているか確認(PORT(S)に該当する部分の3XXXX)
-kubectl get svc/api-service
-
-## クラスタの外部IPアドレスを確認(Public IPに該当する部分)
-ibmcloud ks workers --cluster クラスタ名
-```
-
-これで、`http://{外部IPアドレス}:{3XXXX}` でアクセスできるので、ヘルスチェック等を打ってみてください。
-
-#### ログ確認
-
-クラスタ上のpodのログは以下のコマンドで確認できます。
-
-```bash
-## pod名取得(NAMEに該当する部分)
-kubectl get pods
-
-## ログ表示(pod名は上記コマンドで取得した名前)
-kubectl logs -f pod名
-```
-
-`-f` オプションはフォローオプションです。(ターミナルにログを表示し続ける)  
-もう見たくないって方は `Ctrl+C` で抜けましょう。
-
-#### h2 console表示
-
-このAPIは `Spring Boot` のインメモリDBを利用しています。  
-インメモリDBとして `H2DB` を採用しているので、`H2 Console` を表示することができます。
-
-ブラウザで、`http://{外部IPアドレス}:{3XXXX}/api/h2-console` と打つと表示できます。
-
-直接SQLを実行させることも可能です。
-
-DBが汚くなって綺麗にしたいと思ったら、再度コンテナをデプロイしなおすことで綺麗になります。  
-その際は以下のように実行しましょう。
-
-```bash
-## deployment削除
-kubectl delete -f k8s/deployment.yaml
-
-## service削除
-kubectl delete -f k8s/service.yaml
-
-## deploymentを作成
-kubectl apply -f k8s/deployment.yaml
-
-## serviceを作成(※外部アクセスが必要な時のみ)
-kubectl apply -f k8s/service.yaml
-```
-
-## 付録
-
-本APIに修正を加えた際は、以下のようにコマンドを打ち、出来上がった `jarファイル` を `releaseフォルダ` に配置することで、修正後のコンテナを作成することができます。
-
-しかし、以下コマンドはlinux用です。Powershellなどでは動きませんので、あらかじめご了承ください。
+ルートディレクトリで以下を実行
 
 ```bash
 ## APIのビルドコマンド
-./gradlew build
+$ ./gradlew build
+
+BUILD SUCCESSFUL in 2s
 
 ## APIの起動コマンド
-./gradlew bootRun
+$ ./gradlew bootRun
+
+> Task :bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.2.RELEASE)
+
+2022/06/05 00:11:19.009  INFO [restartedMain] : Starting ApiApplication on PC with PID 21353 (/home/rikuhashiki/study/portfolio-api/build/classes/java/main started by rikuhashiki in /home/rikuhashiki/study/portfolio-api)
+2022/06/05 00:11:19.011  INFO [restartedMain] : No active profile set, falling back to default profiles: default
+2022/06/05 00:11:19.070  INFO [restartedMain] : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2022/06/05 00:11:19.070  INFO [restartedMain] : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2022/06/05 00:11:19.862  INFO [restartedMain] : Bootstrapping Spring Data JPA repositories in DEFERRED mode.
+2022/06/05 00:11:19.904  INFO [restartedMain] : Finished Spring Data repository scanning in 25ms. Found 0 JPA repository interfaces.
+2022/06/05 00:11:20.414  INFO [restartedMain] : Tomcat initialized with port(s): 8091 (http)
+2022/06/05 00:11:20.422  INFO [restartedMain] : Starting service [Tomcat]
+2022/06/05 00:11:20.422  INFO [restartedMain] : Starting Servlet engine: [Apache Tomcat/9.0.37]
+2022/06/05 00:11:20.500  INFO [restartedMain] : Initializing Spring embedded WebApplicationContext
+2022/06/05 00:11:20.500  INFO [restartedMain] : Root WebApplicationContext: initialization completed in 1429 ms
+2022/06/05 00:11:20.732  INFO [restartedMain] : Initializing ExecutorService 'applicationTaskExecutor'
+2022/06/05 00:11:20.765  INFO [task-1] : HHH000204: Processing PersistenceUnitInfo [name: default]
+2022/06/05 00:11:20.801  INFO [task-1] : HHH000412: Hibernate ORM core version 5.4.18.Final
+2022/06/05 00:11:20.910  INFO [task-1] : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2022/06/05 00:11:20.995  INFO [task-1] : HikariPool-1 - Starting...
+2022/06/05 00:11:21.176  INFO [task-1] : HikariPool-1 - Start completed.
+2022/06/05 00:11:21.187  INFO [task-1] : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL95Dialect
+2022/06/05 00:11:21.669  INFO [task-1] : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022/06/05 00:11:21.678  INFO [task-1] : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022/06/05 00:11:21.743  INFO [restartedMain] : LiveReload server is running on port 35729
+2022/06/05 00:11:21.751  INFO [restartedMain] : Exposing 2 endpoint(s) beneath base path '/actuator'
+2022/06/05 00:11:21.789  INFO [restartedMain] : Tomcat started on port(s): 8091 (http) with context path '/api'
+2022/06/05 00:11:21.791  INFO [restartedMain] : Triggering deferred initialization of Spring Data repositories…
+2022/06/05 00:11:21.792  INFO [restartedMain] : Spring Data repositories initialized!
+```
+
+## フロント(vue)の立ち上げ方
+
+```bash
+$ yarn serve
+     ─╯
+yarn run v1.22.4
+$ vue-cli-service serve
+ INFO  Starting development server...
+Starting type checking service...
+Using 1 worker with 2048MB memory limit
+40% building 154/168 modules 14 active /home/rikuhashiki/study/portfolio/node_modules/vuetify/lib/util/mixins.jsBrowserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+98% after emitting CopyPlugin
+
+ DONE  Compiled successfully in 24372ms                                                                                                                                                                                                                      11:00:48 PM
+
+No type errors found
+Version: typescript 4.1.6
+Time: 6265ms
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://172.17.201.155:8080/
+
+  Note that the development build is not optimized.
+  To create a production build, run yarn build.
 ```
